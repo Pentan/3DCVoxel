@@ -11,4 +11,5 @@ for i in __init__.py import_3bvol.py ThreeB.py; do
 echo "copying $i"
 cp $i $ADDON_DIR
 done
+zip $ADDON_DIR.zip $ADDON_DIR/*.py
 echo "done"

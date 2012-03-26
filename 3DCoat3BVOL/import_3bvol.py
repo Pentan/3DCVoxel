@@ -3,8 +3,6 @@ import math
 import bpy
 from mathutils import Matrix
 
-# import ThreeB
-
 if __name__ == "__main__":
     import ThreeB
 else:
@@ -305,10 +303,9 @@ def load(filepath,
     
     # Voxel Directory check
     curdir = os.path.dirname(bpy.data.filepath)
-    #if len(curdir) <= 0:
-    if True:
+    if len(curdir) <= 0:
         #raise NameError("The blend file must be saved to export voxel datas.")
-        return 'Please save the blend file before import'
+        return ({'ERROR'}, 'Please save the blend file before import')
     
     VOXEL_DIR_PATH = os.path.join(curdir, VOXEL_DATA_DIR)
     if os.path.exists(VOXEL_DIR_PATH):
@@ -316,7 +313,7 @@ def load(filepath,
         if os.path.isfile(VOXEL_DIR_PATH):
             # It is file!
             # raise IOError("Same name file found: {}".format(VOXEL_DIR_PATH))
-            return 'Voxel save dir open Error'
+            return ({'ERROR'}, 'Voxel save dir open Error')
     else:
         # Create dir
         os.makedirs(VOXEL_DIR_PATH)
@@ -328,7 +325,7 @@ def load(filepath,
         objlist = []
         traverse_VoxTree(voxtree, objlist)
     
-    return None
+    return (None, None)
 
 ##### For Debugging
 # import imp

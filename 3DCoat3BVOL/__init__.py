@@ -67,17 +67,14 @@ class IMPORT_OT_3b_volumes(bpy.types.Operator, ImportHelper):
     )
     
     def execute(self, context):
-        import import_3bvol
-        # from . import import_3bvol
-        resmsg = import_3bvol.load(self.filepath,
-                                   self.import_scale,
-                                   self.freeze_objects,
-                                   self.import_surfaces,
-                                   self.voxel_dir)
-        if resmsg:
-            self.report({'WARNING'}, resmsg)
-        else:
-            self.report({'INFO'}, 'Import Done')
+        from . import import_3bvol
+        (err, msg) = import_3bvol.load(self.filepath,
+                                       self.import_scale,
+                                       self.freeze_objects,
+                                       self.import_surfaces,
+                                       self.voxel_dir)
+        if err:
+            self.report(err, msg)
         return {'FINISHED'}
     
     def invoke(self, context, event):
@@ -94,7 +91,7 @@ def menu_func_volume_import(self, context):
 
 def register():
     bpy.utils.register_class(IMPORT_OT_3b_volumes)
-    # bpy.types.INFO_MT_file_import.append(menu_func_volume_import)
+    bpy.types.INFO_MT_file_import.append(menu_func_volume_import)
 
 def unregister():
     bpy.utils.unregister_class(IMPORT_OT_3b_volumes)
