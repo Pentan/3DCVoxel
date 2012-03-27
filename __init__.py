@@ -5,8 +5,6 @@ bl_info = {
     "blender": (2, 6, 2),
     "location": "File > Import-Export",
     "description": "Import 3D-Coat 3b. Import Voxels as Volume and Surfaces.",
-    "warning": "",
-    "wiki_url": "",
     "tracker_url": "",
     "category": "Import-Export"}
 
@@ -20,11 +18,14 @@ if 'bpy' in locals():
 import bpy
 from bpy.props import FloatProperty, BoolProperty, StringProperty
 from bpy_extras.io_utils import ImportHelper
+from . import import_3bvol, ThreeB
+from . import fit_voxel_in_bounds
+from . import collect_textures
 
-
-class IMPORT_OT_3b_volumes(bpy.types.Operator, ImportHelper):
+# Operator class
+class IMPORT_OT_3dc_3b_volumes(bpy.types.Operator, ImportHelper):
     """Import 3D-Coat Voxels"""
-    bl_idname = "import3b.3b"
+    bl_idname = "import.3dcoat_3b"
     bl_label = "Import 3D-Coat 3b"
     bl_options = {'PRESET', 'UNDO'}
     
@@ -56,7 +57,7 @@ class IMPORT_OT_3b_volumes(bpy.types.Operator, ImportHelper):
     freeze_objects = BoolProperty(
         name="Apply Transforms",
         description="Apply loc and scale transforms to imported objects",
-        default=False
+        default=True
     )
     
     voxel_dir = StringProperty(
@@ -67,7 +68,6 @@ class IMPORT_OT_3b_volumes(bpy.types.Operator, ImportHelper):
     )
     
     def execute(self, context):
-        from . import import_3bvol
         (err, msg) = import_3bvol.load(self.filepath,
                                        self.import_scale,
                                        self.freeze_objects,
@@ -85,17 +85,21 @@ class IMPORT_OT_3b_volumes(bpy.types.Operator, ImportHelper):
 # Registration
 def menu_func_volume_import(self, context):
     self.layout.operator(
-        IMPORT_OT_3b_volumes.bl_idname,
+        IMPORT_OT_3dc_3b_volumes.bl_idname,
         text="3D-Coat Volumes (.3b)"
     )
 
 def register():
-    bpy.utils.register_class(IMPORT_OT_3b_volumes)
+    bpy.utils.register_class(IMPORT_OT_3dc_3b_volumes)
     bpy.types.INFO_MT_file_import.append(menu_func_volume_import)
+    fit_voxel_in_bounds.register()
+    collect_textures.register()
 
 def unregister():
-    bpy.utils.unregister_class(IMPORT_OT_3b_volumes)
+    bpy.utils.unregister_class(IMPORT_OT_3dc_3b_volumes)
     bpy.types.INFO_MT_file_import.remove(menu_func_volume_import)
+    fit_voxel_in_bounds.unregister()
+    collect_textures.unregister()
 
 if __name__ == '__main__':
     register()

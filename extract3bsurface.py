@@ -1,4 +1,5 @@
-
+# A sample code to convert surface mode's meshs to a obj format.
+# But you should use 3D-Coat's File->Export operation.
 import sys
 from array import array
 import ThreeB
@@ -26,22 +27,6 @@ def calc_normal_matrix(m):
 	ret[11] = 0.0
 	
 	return ret
-	
-	#print("+++++ inv +++++")
-	#tmp = [0.0, 0.0, 0.0]
-	#tmp[0] = m[0] * ret[0] + m[1] * ret[1] + m[2] * ret[2]
-	#tmp[1] = m[4] * ret[0] + m[5] * ret[1] + m[6] * ret[2]
-	#tmp[2] = m[8] * ret[0] + m[9] * ret[1] + m[10] * ret[2]
-	#print("|{} {} {}|".format(tmp[0], tmp[1], tmp[2]))
-	#tmp[0] = m[0] * ret[4] + m[1] * ret[5] + m[2] * ret[6]
-	#tmp[1] = m[4] * ret[4] + m[5] * ret[5] + m[6] * ret[6]
-	#tmp[2] = m[8] * ret[4] + m[9] * ret[5] + m[10] * ret[6]
-	#print("|{} {} {}|".format(tmp[0], tmp[1], tmp[2]))
-	#tmp[0] = m[0] * ret[8] + m[1] * ret[9] + m[2] * ret[10]
-	#tmp[1] = m[4] * ret[8] + m[5] * ret[9] + m[6] * ret[10]
-	#tmp[2] = m[8] * ret[8] + m[9] * ret[9] + m[10] * ret[10]
-	#print("|{} {} {}|".format(tmp[0], tmp[1], tmp[2]))
-	#print("+++++ inv +++++")
 
 def apply_transform(v, vstart, m, ans):
 	ans[0] = m[0] * v[vstart] + m[4] * v[vstart + 1] + m[8] * v[vstart + 2] + m[12]
@@ -68,10 +53,12 @@ def convert_surface_to_obj(voxbranch, vertcount, mtrx, outf):
 	#print("|{0:.4f} {1:.4f} {2:.4f} {3:.4f}|".format(voxbranch.transform[8], voxbranch.transform[9], voxbranch.transform[10], voxbranch.transform[11]))
 	#print("|{0:.4f} {1:.4f} {2:.4f} {3:.4f}|".format(voxbranch.transform[12], voxbranch.transform[13], voxbranch.transform[14], voxbranch.transform[15]))
 	
+	# start converting
 	exportedverts = 0
 	voldat = voxbranch.volume_data
 	if voldat:
 		if voldat.representation == 256:
+    		# volume data has a surface
 			outf.write("g Volume_{}\n".format(voldat.space_ID))
 			normmat = calc_normal_matrix(voldat.transform)
 			tmpv = array("f", (0.0, 0.0, 0.0))
@@ -93,6 +80,7 @@ def convert_surface_to_obj(voxbranch, vertcount, mtrx, outf):
 					normlist.append("vn {0:.8f} {1:.8f} {2:.8f}".format(tmpv[0], tmpv[1], tmpv[2]))
 					i += 7
 				tmpfdef = None
+				
 				# f
 				inds = cell.surface_indices
 				fnum = len(inds)
@@ -110,7 +98,7 @@ def convert_surface_to_obj(voxbranch, vertcount, mtrx, outf):
 	else:
 		print("No Volume data")
 	
-	
+	# convert childs
 	if voxbranch.childs:
 		for childvox in voxbranch.childs:
 			vertcount = convert_surface_to_obj(childvox, vertcount, mtrx, outf)

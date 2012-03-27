@@ -325,14 +325,14 @@ class VoxTreeBranch:
             for childvoxelm in childobjs:
                 self.childs.append(VoxTreeBranch(childvoxelm, chunkdata))
         
-
+# Create VoxTree from loaded file's VoxTreeXML data.
 def create_VoxTree(contents):
     chunkdata = contents.get("VOL3").data
     if chunkdata == None:
         return None
     
     #print(chunkdata.VoxTreeXML)
-    # Hack. VoxTreeXML has <+></+> tag. It is a illegal tag for XML parser.
+    # [Hack]. VoxTreeXML has <+></+> tag. It is a illegal tag for XML parser.
     escvoxxml = chunkdata.VoxTreeXML.replace(b"+>", b"p>")
     #print(escvoxxml)
     voxxml = ElementTree.fromstring(escvoxxml)

@@ -1,8 +1,9 @@
+# simple utility to convert 3D-Coat's raw voxel data to flat 8bit raw voxel data.
 import sys
 import struct
 import os.path
 
-# max read components. NOT Bytes.
+# max read components at onece. NOT Bytes.
 ONECE_READ_MAX = 1024 * 1024 * 4
 
 def convert_8bit(size_x, size_y, size_z, infile, outfile):

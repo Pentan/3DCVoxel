@@ -8,12 +8,14 @@ if __name__ == "__main__":
 else:
     from . import ThreeB
 
+# Global settings
 READ_SURFACES = True
 FREEZE_VOXELS = False
 IMPORT_SCALE = 0.05
 VOXEL_DATA_DIR = "voxels"
 VOXEL_DIR_PATH = ""
 
+# Data container
 class VoxDataSpec:
     volume_name = ""
     volume_color = (0, 0, 0)
@@ -56,6 +58,7 @@ class VoxDataSpec:
         voxsize_x = maxv[0] - minv[0]
         voxsize_y = maxv[1] - minv[1]
         voxsize_z = maxv[2] - minv[2]
+        
         voxelbuf = bytearray(b'\x00' * (voxsize_x * voxsize_y * voxsize_z))
         
         self.voxel_size = (voxsize_x, voxsize_y, voxsize_z)
@@ -65,7 +68,7 @@ class VoxDataSpec:
         self.surface_vertices = []
         self.surface_faces = []
         for voxcell in voxdata.cells:
-            # Voxel
+            # Voxel. A cell has 9x9x9 voxels. But last 1 is overlaped with next cell.
             for iz in range(8):
                 cellz = voxcell.z * 8 + iz - minv[2]
                 if cellz >= voxsize_z:
@@ -82,6 +85,7 @@ class VoxDataSpec:
                         cellx = voxcell.x * 8 + ix - minv[0]
                         if cellx >= voxsize_x:
                             continue
+                        # Raw voxel value is 16bit. convert it to 8bit
                         val = voxcell.data[ix + iy * 9 + iz * 81] / 256
                         voxelbuf[cellx + yindex + zindex] = int(min(val, 255))
             # Surface
@@ -184,7 +188,7 @@ def create_voxel_object(voxspec, transform):
     return voxobj
 
 def create_surface_object(voxspec, transform):
-    # Create Mesh
+    # Create surface Mesh
     if len(voxspec.surface_vertices) <= 0:
         return None
     surfmesh = bpy.data.meshes.new(voxspec.volume_name + "_SurfMesh")
@@ -194,7 +198,7 @@ def create_surface_object(voxspec, transform):
     surfmesh.from_pydata(voxspec.surface_vertices, [], voxspec.surface_faces)
     surfmesh.update()
     surfobj.matrix_world = transform
-    
+    # Surface material with volume color.
     surfmat = bpy.data.materials.new(voxspec.volume_name + "_SurfMat")
     surfmat.diffuse_color = voxspec.volume_color
     surfmat.use_transparent_shadows = True
@@ -246,10 +250,12 @@ def build_objects(voxdata):
     # Create Volume
     obj = create_voxel_object(voxspec, voxtransform)
     if FREEZE_VOXELS:
+        # Apply transform
         mesh = obj.data
         mesh.transform(frzlocalmtrx)
         mesh.update()
         obj.matrix_world = frzworldmtrx
+        # fix voxel transform
         txslot = obj.active_material.texture_slots[0]
         txslot.scale = (
             2 / (voxspec.voxel_size[0] * frzlocalmtrx[0][0]),
@@ -269,6 +275,7 @@ def build_objects(voxdata):
         obj = create_surface_object(voxspec, voxtransform)
         if obj != None:
             if FREEZE_VOXELS:
+                # Apply transform
                 mesh = obj.data
                 mesh.transform(frzlocalmtrx)
                 mesh.update()
@@ -282,7 +289,6 @@ def traverse_VoxTree(voxbranch, objlist):
     if voxbranch.volume_data:
         objs = build_objects(voxbranch.volume_data)
         objlist.append(objs)
-        
     
     if voxbranch.childs:
         for subbranch in voxbranch.childs:
@@ -315,7 +321,7 @@ def load(filepath,
             # raise IOError("Same name file found: {}".format(VOXEL_DIR_PATH))
             return ({'ERROR'}, 'Voxel save dir open Error')
     else:
-        # Create dir
+        # Create voxels output dir
         os.makedirs(VOXEL_DIR_PATH)
     
     # Load File
@@ -331,7 +337,6 @@ def load(filepath,
 # import imp
 # imp.reload(ThreeB)
 if __name__ == "__main__":
-    
     #filename = "sample/surf2_trans.3b"
     #filename = "sample/vox3_layer3.3b"
     #filename = "sample/vox2_layer2_2x.3b"
@@ -339,5 +344,4 @@ if __name__ == "__main__":
     curdir = os.path.dirname(bpy.data.filepath)
     filepath = os.path.join(curdir, filename)
     #print(filepath)
-    
     load(filepath)
