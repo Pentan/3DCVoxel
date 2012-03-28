@@ -1,0 +1,56 @@
+3D-Coat .3b file utilities.
+
+=== Blender addons ===
+# 3b file importer:
+  3DCoat3BVOL.zip is Blender addon to import voxels as volume textured objects.
+  To install
+   1. Select menu "File->User Preferences..." and open "Addon" tab.
+   2. Press "Install Addon..." button at bottom bar.
+   3. Select 3DCoat3BVOL.zip.
+  or
+   1. unzip and move 3DCoat3BVOL directory to Blender's script/addon directory.
+  After install, enable "3D-Coat 3b file" addon at "Import-Export" category.
+
+  Import options
+   - Import Scale (Number):
+      Common scaling value for importing objects.
+   - Import Surface (Check box):
+      Ckeck this is you want to import surface mode's mesh.
+      * Imported meshes are "RAW" mesh generated from voxels.
+        Faces are separeted by 3D-Coat's internal voxel cells.
+   - Apply Transform (Check box):
+      Apply location and scale transform to objects.
+      Rotation is not applied.
+      Because Blender's texture has no rotation transform.
+   - Voxel Directory (String):
+      Relative path from the blend file.
+      Converted voxel datas will be exported in here.
+   - Use ID number(Check box):
+      Impoted objects names ID number instead of volel layer name.
+      This is a safety option for multi-byte environment user.
+
+# support commands:
+  - Collect Texture
+     Collect textures from selected objects and add it to active object.
+     No manu interface. Exec "Collect Texture" from space key's menu.
+  - Fit Voxel data in Bound Box
+     A voxel texture's offset and size fit in object's bound box.
+     No menu interface. Exec "Fit Voxel data in Bound Box" from space bar's menu.
+
+=== Other tools ===
+# rawvox2raw8vox.py
+   Convert Raw Voxel data, exported from 3D-Coat to 8bit flat voxel data.
+   This script uses ThreeB.py
+   usage: python rawvox2raw8vox.py file0 ...
+
+=== Samples for ThreeB.py ===
+# pydump3b.py
+   A simple .3b file dumper.
+# extract3bsurface.py
+   A simple .3b file's surface mesh extracter.
+# mkdladdon.sh
+   A shell script to create Blender addon package.
+
+
+License: zlib License
+2012 Satoru NAKAJIMA
