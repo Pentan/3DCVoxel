@@ -1,4 +1,5 @@
 # A sample code to dump 3D-Coat 3b file's VOL3 chunk
+# usage: python dump3b.py file.3b
 
 import sys
 import ThreeB

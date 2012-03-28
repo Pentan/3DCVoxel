@@ -1,4 +1,5 @@
-# simple utility to convert 3D-Coat's raw voxel data to flat 8bit raw voxel data.
+# A simple utility to convert 3D-Coat's raw voxel data to flat 8bit raw voxel data.
+# usage python rawvox2raw8vox.py file1.voxel
 import sys
 import struct
 import os.path

@@ -1,3 +1,5 @@
+# A voxel texture's offset and size fit in object's bound box.
+# Exec "Fit Voxel data in Bound Box" from space bar's menu.
 import sys
 import bpy
 

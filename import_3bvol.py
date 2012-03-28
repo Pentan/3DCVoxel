@@ -1,3 +1,4 @@
+# 3D-Coat .3b file importer main routine.
 import os
 import math
 import bpy
@@ -14,6 +15,7 @@ FREEZE_VOXELS = False
 IMPORT_SCALE = 0.05
 VOXEL_DATA_DIR = "voxels"
 VOXEL_DIR_PATH = ""
+USE_VOXEL_ID = False
 
 # Data container
 class VoxDataSpec:
@@ -27,7 +29,11 @@ class VoxDataSpec:
     surface_faces = None
     
     def __init__(self, voxdata, outdir):
-        self.volume_name = voxdata.volume_name
+        global USE_VOXEL_ID
+        if USE_VOXEL_ID:
+            self.volume_name = 'Volume{}'.format(voxdata.space_ID)
+        else:
+            self.volume_name = voxdata.volume_name
         self.volume_color = (
             ((voxdata.default_color >> 16) & 0xff) / 255,
             ((voxdata.default_color >> 8) & 0xff) / 255,
@@ -299,13 +305,15 @@ def load(filepath,
          import_scale=0.05,
          freeze_volumes=False,
          read_surface=True,
-         voxel_dir=VOXEL_DATA_DIR):
-    global READ_SURFACES, FREEZE_VOXELS, IMPORT_SCALE, VOXEL_DATA_DIR, VOXEL_DIR_PATH
+         voxel_dir=VOXEL_DATA_DIR,
+         use_voxel_id=False):
+    global READ_SURFACES, FREEZE_VOXELS, IMPORT_SCALE, VOXEL_DATA_DIR, VOXEL_DIR_PATH, USE_VOXEL_ID
     
     READ_SURFACES =read_surface
     FREEZE_VOXELS = freeze_volumes
     IMPORT_SCALE = import_scale
     VOXEL_DATA_DIR = voxel_dir
+    USE_VOXEL_ID = use_voxel_id
     
     # Voxel Directory check
     curdir = os.path.dirname(bpy.data.filepath)

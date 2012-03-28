@@ -1,5 +1,6 @@
 # A sample code to convert surface mode's meshs to a obj format.
 # But you should use 3D-Coat's File->Export operation.
+
 import sys
 from array import array
 import ThreeB

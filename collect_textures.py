@@ -1,3 +1,6 @@
+# Collect textures from selected objects and add it to active object.
+# Exec "Collect Texture" from space key's menu.
+
 import sys
 import bpy
 
@@ -12,7 +15,7 @@ def collect_textures(context):
 #        'rna_type',
 #    )
     # attributes to copy
-     cpattrs = (
+    cpattrs = (
         'alpha_factor',
         'ambient_factor',
         'blend_type',
@@ -87,7 +90,7 @@ def collect_textures(context):
         # collectobj.data.materials.append(collectmat)
         return ({'ERROR'}, "Collector has no materials.")
     
-    # start collect from selected objects
+    # start collecting from selected objects
     collected = 0
     for obj in context.selected_objects:
         if obj == collectobj:
@@ -102,7 +105,7 @@ def collect_textures(context):
                 if srcslot.use == False:
                     # Disabled slot
                     continue
-                
+                # append found one
                 try:
                     nslot = collectmat.texture_slots.add()
                 except RuntimeError:

@@ -4,8 +4,10 @@ bl_info = {
     "version": (1, 0),
     "blender": (2, 6, 2),
     "location": "File > Import-Export",
-    "description": "Import 3D-Coat 3b. Import Voxels as Volume and Surfaces.",
-    "tracker_url": "",
+    "description": "Import 3D-Coat 3b. Convert Voxels and import it as Volume textures. and some support tools.",
+    "warnig": "",
+    "wiki_url": "",
+    "support": "COMMUNITY",
     "category": "Import-Export"}
 
 if 'bpy' in locals():
@@ -14,6 +16,10 @@ if 'bpy' in locals():
         imp.reload(ThreeB)
     if 'import_3bvol' in locals():
         imp.reload(import_3bvol)
+    if 'fit_voxel_in_bounds' in locals():
+        imp.reload(fit_voxel_in_bounds)
+    if 'collect_textures' in locals():
+        imp.reload(collect_textures)
 
 import bpy
 from bpy.props import FloatProperty, BoolProperty, StringProperty
@@ -24,7 +30,7 @@ from . import collect_textures
 
 # Operator class
 class IMPORT_OT_3dc_3b_volumes(bpy.types.Operator, ImportHelper):
-    """Import 3D-Coat Voxels"""
+    """Import 3D-Coat Voxels as volume textres"""
     bl_idname = "import.3dcoat_3b"
     bl_label = "Import 3D-Coat 3b"
     bl_options = {'PRESET', 'UNDO'}
@@ -67,12 +73,19 @@ class IMPORT_OT_3dc_3b_volumes(bpy.types.Operator, ImportHelper):
         default="voxels"
     )
     
+    use_id_number = BoolProperty(
+        name="Use ID number",
+        description="Use ID number istead of voxel layer name",
+        default=False
+    )
+    
     def execute(self, context):
         (err, msg) = import_3bvol.load(self.filepath,
                                        self.import_scale,
                                        self.freeze_objects,
                                        self.import_surfaces,
-                                       self.voxel_dir)
+                                       self.voxel_dir,
+                                       self.use_id_number)
         if err:
             self.report(err, msg)
         return {'FINISHED'}
