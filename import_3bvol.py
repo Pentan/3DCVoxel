@@ -161,6 +161,9 @@ def create_voxel_object(voxspec, transform):
     voxtex.voxel_data.file_format = 'RAW_8BIT'
     voxtex.voxel_data.filepath = voxspec.voxel_file_path
     voxtex.voxel_data.resolution = voxspec.voxel_size
+    voxtex.voxel_data.use_still_frame = True
+    voxtex.voxel_data.still_frame = 1
+    
     # Color ramp for 3D-Coat looks shape
     voxtex.use_color_ramp = True
     ramp = voxtex.color_ramp
