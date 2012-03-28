@@ -30,12 +30,12 @@
       This is a safety option for multi-byte environment user.
 
 # support commands:
-  - Collect Texture
+  - Collect Textures
      Collect textures from selected objects and add it to active object.
      No manu interface. Exec "Collect Texture" from space key's menu.
   - Fit Voxel data in Bound Box
      A voxel texture's offset and size fit in object's bound box.
-     No menu interface. Exec "Fit Voxel data in Bound Box" from space bar's menu.
+     No menu interface. Exec "Fit Voxel data in Bound Box" from space key's menu.
 
 === Other tools ===
 # rawvox2raw8vox.py
@@ -48,8 +48,6 @@
    A simple .3b file dumper.
 # extract3bsurface.py
    A simple .3b file's surface mesh extracter.
-# mkdladdon.sh
-   A shell script to create Blender addon package.
 
 
 License: zlib License
