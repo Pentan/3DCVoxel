@@ -1,7 +1,7 @@
 bl_info = {
     "name": "3D-Coat 3b file",
     "author": "Satoru NAKAJIMA",
-    "version": (1, 0),
+    "version": (1, 0, 1),
     "blender": (2, 6, 2),
     "location": "File > Import-Export",
     "description": "Import 3D-Coat 3b. Convert Voxels and import it as Volume textures. and some support tools.",
