@@ -20,7 +20,7 @@ USE_VOXEL_ID = False
 # Data container
 class VoxDataSpec:
     volume_name = ""
-    volume_color = (0, 0, 0)
+    volume_color = (1, 1, 1)
     voxel_file_name = ""
     voxel_file_path = ""
     voxel_size = None
@@ -167,21 +167,27 @@ def create_voxel_object(voxspec, transform):
     # Color ramp for 3D-Coat looks shape
     voxtex.use_color_ramp = True
     ramp = voxtex.color_ramp
-    ramp.elements[0].position = 0.5
-    ramp.elements[0].color = (1, 1, 1, 0)
-    ramp.elements[1].position = 0.51
-    ramp.elements[1].color = (1, 1, 1, 1)
+    ramp.elements[0].position = 0.495
+    ramp.elements[0].color = voxspec.volume_color + (0,)
+    ramp.elements[1].position = 0.505
+    ramp.elements[1].color = voxspec.volume_color + (1,)
     
     # Create Volume Material
     voxmat = bpy.data.materials.new(voxspec.volume_name + "_VolMat")
     voxmat.type='VOLUME'
     voxmat.volume.density = 0
+    voxmat.volume.emission = 0
+    voxmat.volume.reflection = 0
     voxmat.use_transparent_shadows = True
     texslot = voxmat.texture_slots.add()
     texslot.texture = voxtex
     texslot.use_map_density = True
     texslot.density_factor = 1.0
-    # texslot.use_map_color_emission = False
+    #texslot.use_map_emission = True
+    texslot.use_map_color_emission = True
+    texslot.use_map_reflect = True
+    texslot.use_map_color_reflection = True
+    
     texslot.offset = (
         (maxv[0] + minv[0]) * -0.5,
         (maxv[1] + minv[1]) * -0.5,
