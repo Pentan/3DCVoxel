@@ -18,10 +18,6 @@
       Ckeck this is you want to import surface mode's mesh.
       * Imported meshes are "RAW" mesh generated from voxels.
         Faces are separeted by 3D-Coat's internal voxel cells.
-   - Apply Transform (Check box):
-      Apply location and scale transform to objects.
-      Rotation is not applied.
-      Because Blender's texture has no rotation transform.
    - Voxel Directory (String):
       Relative path from the blend file.
       Converted voxel datas will be exported in here.
@@ -48,6 +44,16 @@
    A simple .3b file dumper.
 # extract3bsurface.py
    A simple .3b file's surface mesh extracter.
+
+History
+1.0
+ - release
+1.0.1
+ - Volume texture's color refers to voxel default color.
+2.0.0
+ - Change volume texture's transform manipulation.
+   Now using Empty to transform volume textures.
+ - Remove import option "Apply Transform".
 
 
 License: zlib License
