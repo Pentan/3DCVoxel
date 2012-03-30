@@ -1,7 +1,7 @@
 bl_info = {
     "name": "3D-Coat 3b file",
     "author": "Satoru NAKAJIMA",
-    "version": (1, 0, 1),
+    "version": (2, 0, 0),
     "blender": (2, 6, 2),
     "location": "File > Import-Export",
     "description": "Import 3D-Coat 3b. Convert Voxels and import it as Volume textures. and some support tools.",
@@ -60,12 +60,6 @@ class IMPORT_OT_3dc_3b_volumes(bpy.types.Operator, ImportHelper):
         default=False
     )
     
-    freeze_objects = BoolProperty(
-        name="Apply Transforms",
-        description="Apply loc and scale transforms to imported objects",
-        default=True
-    )
-    
     voxel_dir = StringProperty(
         name="Voxel directory",
         description="Directory name to save voxel datas. Relative path from the blend file",
@@ -82,7 +76,6 @@ class IMPORT_OT_3dc_3b_volumes(bpy.types.Operator, ImportHelper):
     def execute(self, context):
         (err, msg) = import_3bvol.load(self.filepath,
                                        self.import_scale,
-                                       self.freeze_objects,
                                        self.import_surfaces,
                                        self.voxel_dir,
                                        self.use_id_number)

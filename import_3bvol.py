@@ -11,7 +11,7 @@ else:
 
 # Global settings
 READ_SURFACES = True
-FREEZE_VOXELS = False
+# FREEZE_VOXELS = False
 IMPORT_SCALE = 0.05
 VOXEL_DATA_DIR = "voxels"
 VOXEL_DIR_PATH = ""
@@ -127,17 +127,23 @@ class VoxDataSpec:
             voxf.close()
 
 def create_voxel_object(voxspec, transform):
+    
+    voxroot = bpy.data.objects.new(voxspec.volume_name + "_ROOT", None)
+    voxroot.show_name = True
+    bpy.context.scene.objects.link(voxroot)
+    bpy.context.scene.objects.active = voxroot
+    
     minv = voxspec.voxel_AABB['min']
     maxv = voxspec.voxel_AABB['max']
     voxverts = (
-        (minv[0], minv[1], minv[2]),
-        (minv[0], minv[1], maxv[2]),
-        (maxv[0], minv[1], maxv[2]),
-        (maxv[0], minv[1], minv[2]),
-        (minv[0], maxv[1], minv[2]),
-        (minv[0], maxv[1], maxv[2]),
-        (maxv[0], maxv[1], maxv[2]),
-        (maxv[0], maxv[1], minv[2])
+        (-1, -1, -1),
+        (-1, -1,  1),
+        ( 1, -1,  1),
+        ( 1, -1, -1),
+        (-1,  1, -1),
+        (-1,  1,  1),
+        ( 1,  1,  1),
+        ( 1,  1, -1)
     )
     voxfaces = (
         (3, 2, 1, 0),
@@ -153,8 +159,17 @@ def create_voxel_object(voxspec, transform):
     bpy.context.scene.objects.active = voxobj
     voxmesh.from_pydata(voxverts, [], voxfaces)
     voxmesh.update()
-    voxobj.matrix_world = transform
     voxobj.draw_type = 'WIRE'
+    voxobj.parent = voxroot
+    voxobj.parent_type = 'OBJECT'
+    
+    sizemtrx = Matrix((
+        ((maxv[0] - minv[0]) * 0.5, 0, 0, (maxv[0] + minv[0]) * 0.5),
+        (0, (maxv[1] - minv[1]) * 0.5, 0, (maxv[1] + minv[1]) * 0.5),
+        (0, 0, (maxv[2] - minv[2]) * 0.5, (maxv[2] + minv[2]) * 0.5),
+        (0, 0, 0, 1)
+    ))
+    voxroot.matrix_world = transform * sizemtrx
     
     # Create Voxel Texture
     voxtex = bpy.data.textures.new(voxspec.volume_name + "_Voxel", type='VOXEL_DATA')
@@ -187,17 +202,9 @@ def create_voxel_object(voxspec, transform):
     texslot.use_map_color_emission = True
     texslot.use_map_reflect = True
     texslot.use_map_color_reflection = True
+    texslot.texture_coords = 'OBJECT'
+    texslot.object = voxroot
     
-    texslot.offset = (
-        (maxv[0] + minv[0]) * -0.5,
-        (maxv[1] + minv[1]) * -0.5,
-        (maxv[2] + minv[2]) * -0.5
-    )
-    texslot.scale = (
-        2 / voxspec.voxel_size[0],
-        2 / voxspec.voxel_size[1],
-        2 / voxspec.voxel_size[2]
-    )
     # Attach
     voxmesh.materials.append(voxmat)
     return voxobj
@@ -221,7 +228,7 @@ def create_surface_object(voxspec, transform):
     return surfobj
     
 def build_objects(voxdata):
-    global READ_SURFACES, FREEZE_VOXELS, IMPORT_SCALE, VOXEL_DATA_DIR, VOXEL_DIR_PATH
+    global READ_SURFACES, IMPORT_SCALE, VOXEL_DATA_DIR, VOXEL_DIR_PATH
     #print('--- create object {} ---'.format(voxdata.volume_name))
     #print(' cells: {}'.format(len(voxdata.cells)))
     
@@ -241,18 +248,6 @@ def build_objects(voxdata):
     ))
     voxtransform = basetrans * voxtmtrx
     
-    # Transforms for freeze location and scale. ignore rotation.
-    if FREEZE_VOXELS:
-        (loc, rot, scl) = voxtransform.decompose()
-        loc.rotate(rot.conjugated())
-        frzlocalmtrx = Matrix((
-            (scl[0], 0, 0, loc[0]),
-            (0, scl[1], 0, loc[1]),
-            (0, 0, scl[2], loc[2]),
-            (0, 0, 0, 1)
-        ))
-        frzworldmtrx = rot.to_matrix().to_4x4()
-    
     # Parse data
     voxspec = VoxDataSpec(voxdata, VOXEL_DIR_PATH)
     if voxspec.voxel_size == None:
@@ -264,37 +259,12 @@ def build_objects(voxdata):
     
     # Create Volume
     obj = create_voxel_object(voxspec, voxtransform)
-    if FREEZE_VOXELS:
-        # Apply transform
-        mesh = obj.data
-        mesh.transform(frzlocalmtrx)
-        mesh.update()
-        obj.matrix_world = frzworldmtrx
-        # fix voxel transform
-        txslot = obj.active_material.texture_slots[0]
-        txslot.scale = (
-            2 / (voxspec.voxel_size[0] * frzlocalmtrx[0][0]),
-            2 / (voxspec.voxel_size[1] * frzlocalmtrx[1][1]),
-            2 / (voxspec.voxel_size[2] * frzlocalmtrx[2][2])
-        )
-        txslot.offset = (
-            txslot.offset[0] * frzlocalmtrx[0][0] - frzlocalmtrx[0][3],
-            txslot.offset[1] * frzlocalmtrx[0][0] - frzlocalmtrx[1][3],
-            txslot.offset[2] * frzlocalmtrx[0][0] - frzlocalmtrx[2][3],
-        )
-    
     ret.update(volume=obj)
     
     # Create Surface
     if READ_SURFACES:
         obj = create_surface_object(voxspec, voxtransform)
         if obj != None:
-            if FREEZE_VOXELS:
-                # Apply transform
-                mesh = obj.data
-                mesh.transform(frzlocalmtrx)
-                mesh.update()
-                obj.matrix_world = frzworldmtrx
             ret.update(surface=obj)
     
     return ret
@@ -312,14 +282,12 @@ def traverse_VoxTree(voxbranch, objlist):
 
 def load(filepath,
          import_scale=0.05,
-         freeze_volumes=False,
          read_surface=True,
          voxel_dir=VOXEL_DATA_DIR,
          use_voxel_id=False):
-    global READ_SURFACES, FREEZE_VOXELS, IMPORT_SCALE, VOXEL_DATA_DIR, VOXEL_DIR_PATH, USE_VOXEL_ID
+    global READ_SURFACES, IMPORT_SCALE, VOXEL_DATA_DIR, VOXEL_DIR_PATH, USE_VOXEL_ID
     
     READ_SURFACES =read_surface
-    FREEZE_VOXELS = freeze_volumes
     IMPORT_SCALE = import_scale
     VOXEL_DATA_DIR = voxel_dir
     USE_VOXEL_ID = use_voxel_id
