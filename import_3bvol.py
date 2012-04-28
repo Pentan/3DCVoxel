@@ -265,6 +265,10 @@ def build_objects(voxdata):
     if READ_SURFACES:
         obj = create_surface_object(voxspec, voxtransform)
         if obj != None:
+            if ret['volume']:
+                volobj = ret['volume']
+                obj.matrix_parent_inverse = volobj.parent.matrix_world.inverted()
+                obj.parent = volobj.parent
             ret.update(surface=obj)
     
     return ret
