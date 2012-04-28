@@ -54,7 +54,8 @@ History
  - Change volume texture's transform manipulation.
    Now using Empty to transform volume textures.
  - Remove import option "Apply Transform".
-
+2.0.1
+ - Changes to set a imported surfaces's parent to volume's root empty.
 
 License: zlib License
 2012 Satoru NAKAJIMA
