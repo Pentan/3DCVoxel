@@ -1,0 +1,52 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>Blender addon simple tutorial</title>
+<style>
+    .imgblock {
+        display: block;
+        margin-top: 4px;
+        margin-bottom: 4px;
+    }
+</style>
+</head>
+<body>
+<h1>Blender import tutrial</h1>
+<p>Now, I have a 3D-Coat scene like this.</p>
+<img class="imgblock" src="images/3dc_scene.jpg" alt="sample 3dc scene">
+
+<h2>Import</h2>
+<p>
+Now, launch Blender that has already installed addon and <strong>save blend file before import 3b file</strong>.
+This addon converts 3b's voxel objects to blender readable voxel format and export it to inputed directory.
+Voxel data export directory name is input from import option. and create it if not exist.
+</p>
+<img class="imgblock" src="images/blender_import_menu.jpg" alt="import option">
+<img class="imgblock" src="images/blender_import_dialog.jpg" alt="import option">
+<p>
+Imported object may be like this.
+</p>
+<img class="imgblock" src="images/blender_imported.jpg" alt="imported objects">
+
+<h2>Recommends fix volume texture settings</h2>
+<p>
+Current version's Blender (2.6.2) cannot render intersected volume material objects well.
+I recommend to combine these volume textures. This addon includes simple tool "Collect Textures" to do it.
+<ol>
+<li>Add a new mesh object (like a cube) and resize it to cover all volume objects.
+<img class="imgblock" src="images/blender_add_cube.jpg" alt="add cube"></li>
+<li>Create and assign new Volume material. It's density value set to 0.0. This setting is same as other imported objects.</li>
+<li>Select imported volume objects and created one. The created one must be active object.</li>
+<li>Hit Space key and input "Collect Textures". Click a search result to exec command.
+<img class="imgblock" src="images/blender_collect.jpg" alt="cullect textures"></li>
+<li>Now the mesh will hold all selected volume textures.
+<img class="imgblock" src="images/blender_collect_result.jpg" alt="collect result">
+render only this object.
+<img class="imgblock" src="images/blender_render_collected.jpg" alt="render collected"></li>
+</ol>
+
+<strong>WARNING</strong>: Blender has only 18 textures at one material. If over flow, You should union some voxels in 3D-Coat or composite in post process.
+</p>
+
+</body>
+</html>
