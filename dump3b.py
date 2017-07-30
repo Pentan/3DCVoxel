@@ -43,9 +43,14 @@ for i,fname in enumerate(sys.argv[1:]):
     print("input {0}".format(fname))
     threeb = ThreeB.load_3bfile(fname)
     
+    print("--- Chunk list ---")
+    for k in threeb.keys():
+        print("{}".format(k))
+    
+    print("--- Volume data ---")
     chunk = threeb.get("VOL3")
     chunkdata = chunk.data
-    print("VOL3 chunk version: {}".format(chunkdata.version))
+    print("VOL3 chunk version:{} flags:{} volumes:{}".format(chunkdata.version, chunkdata.flags, len(chunkdata.volumes)))
     #print("VoxTreeXML:\n{0}".format(chunkdata.VoxTreeXML))
     
     voxtree = ThreeB.create_VoxTree(threeb)

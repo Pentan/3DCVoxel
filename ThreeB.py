@@ -112,7 +112,7 @@ class ThreeBVOL3Cell:
     def __init__(self, f, chunkinfo):
         if chunkinfo.version > 5:
             tmp = unpack("<Hlll", f.read(2 + 4 * 3))
-            self.v6WORD0 = tmp[0]
+            self.signature = tmp[0] # 0xCE11
             self.x = tmp[1]
             self.y = tmp[2]
             self.z = tmp[3]
@@ -226,6 +226,7 @@ class ThreeBChunk:
     
     # VOL3 chunk (Voxel data chunk)
     #  chunk.version : data version (6 or later is experimental)
+    #  chunk.flags : data flags ()
     #  chunk.volumes : volume datas dictionary (key:VoxelID(string))
     #  chunk.VoxTreeXML : VoxTree info XML data
     def _read_VOL3(self, f):
@@ -233,7 +234,8 @@ class ThreeBChunk:
         
         buf = f.read(8)
         tmp = unpack("<LL", buf)
-        tmpdat.version = tmp[0]
+        tmpdat.version = tmp[0] & 0b111111
+        tmpdat.flags = tmp[0] & 0x111000000
         volume_amount = tmp[1]
         tmpdat.volumes = {}
         
